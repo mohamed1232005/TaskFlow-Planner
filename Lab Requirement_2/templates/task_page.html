@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow Planner - Create Tasks</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="task-box">
+        <h1>Create a New Task</h1>
+        <form action="/task_page" method="POST">
+            <label for="task">Task:</label>
+            <input type="text" name="task" id="task" required><br><br>
+            
+            <label for="priority">Priority:</label>
+            <select name="priority" id="priority">
+                <option value="1">High</option>
+                <option value="2">Medium</option>
+                <option value="3">Low</option>
+            </select><br><br>
+            
+            <label for="deadline">Deadline:</label>
+            <input type="date" name="deadline" id="deadline" required><br><br>
+            
+            <input type="submit" value="Add Task">
+        </form>
+        <br>
+        <a href="/task_list">View All Tasks</a> <!-- No "Previous" button on this page -->
+    </div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow Planner - Task List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="task-list-box">
+        <h1>All Tasks</h1>
+
+        <!-- Progress bar -->
+        <div class="progress-container">
+            <progress id="progress-bar" value="0" max="100"></progress>
+            <span id="progress-percentage">0%</span>
+        </div>
+        
+        <ul>
+            {% for task in tasks %}
+                <li>
+                    <strong>{{ task.task }}</strong> - Priority: {{ task.priority }} - Deadline: {{ task.deadline }}
+                    <span id="countdown-{{ loop.index0 }}"></span>
+                    <input type="checkbox" {% if task.completed %}checked{% endif %} onchange="toggleComplete({{ loop.index0 }})"> Completed
+                </li>
+            {% endfor %}
+        </ul>
+
+        <br>
+        <a href="/task_page">Previous</a> <!-- "Previous" button added here -->
+    </div>
+
+    <script>
+        const tasks = {{ tasks | tojson }};
+        const totalTasks = tasks.length;
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercentage = document.getElementById('progress-percentage');
+
+        function updateProgressBar() {
+            const completedTasks = tasks.filter(task => task.completed).length;
+            if (totalTasks > 0) {
+                const progress = (completedTasks / totalTasks) * 100;
+                progressBar.value = progress;
+                progressPercentage.innerText = Math.round(progress) + '%';
+            }
+        }
+
+        function toggleComplete(index) {
+            tasks[index].completed = !tasks[index].completed;
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            updateProgressBar();
+        }
+
+        function calculateCountdown(deadline) {
+            const currentDate = new Date();
+            const dueDate = new Date(deadline);
+            const timeDiff = dueDate - currentDate;
+
+            if (timeDiff <= 0) {
+                return "Deadline passed";
+            }
+
+            const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            return daysLeft + " days left";
+        }
+
+        tasks.forEach((task, index) => {
+            const countdownElement = document.getElementById(`countdown-${index}`);
+            countdownElement.innerText = calculateCountdown(task.deadline);
+        });
+
+        updateProgressBar();
+    </script>
+</body>
+</html>
